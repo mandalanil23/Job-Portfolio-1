@@ -2300,70 +2300,7 @@
         }
 
         // ==================== RESUME DOWNLOAD ====================
-        function downloadResume() {
-            // Create a sample resume download
-            const resumeContent = `
-                ANIL KUMAR MANDAL
-                Data Analyst & IT Operations Management
-                
-                Contact: +91-7503699636 | mandal.anil23@gmail.com
-                Location: Jahangirpuri, New Delhi - 110033
-                LinkedIn: linkedin.com/in/anil-mandal-16997386
-                
-                PROFESSIONAL SUMMARY
-                Oriented MIS Manager & Data Analyst with 15+ years of experience in analyzing large data sets, 
-                Preparing sales forecasts, Creating dashboards, and generating meaningful insights for strategic 
-                decision-making.
-                
-                SKILLS
-                - Power BI, Advanced Excel, SQL, Data Visualization
-                - Business Automation, AI Agent Development
-                - Web Application Development
-                - Stakeholder Management, Team Leadership
-                
-                EXPERIENCE
-                [Detailed work experience from resume]
-            `;
-            
-            const blob = new Blob([resumeContent], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Anil_Kumar_Mandal_Resume.txt';
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
-
-        function downloadCoverLetter() {
-            const coverLetter = `
-                Dear Hiring Manager,
-                
-                I am writing to express my interest in the Data Analyst position. With 15+ years of experience 
-                in data analytics, business intelligence, and IT operations management, I bring a unique blend 
-                of technical expertise and business acumen.
-                
-                My key achievements include:
-                - 40% improvement in reporting accuracy
-                - 60% reduction in manual reporting time
-                - Successfully handled 18 government projects
-                - Expert in Power BI, Advanced Excel, SQL, and automation tools
-                
-                I am excited about the opportunity to contribute to your organization.
-                
-                Sincerely,
-                Anil Kumar Mandal
-            `;
-            
-            const blob = new Blob([coverLetter], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Anil_Kumar_Mandal_Cover_Letter.txt';
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
-
-        // ==================== GITHUB INTEGRATION ====================
+                // ==================== GITHUB INTEGRATION ====================
         const githubProjects = [
             {
                 name: "Power BI Dashboard Templates",
