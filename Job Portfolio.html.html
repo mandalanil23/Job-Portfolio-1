@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anil Kumar Mandal - Data Analyst & IT Operations Management</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS VARIABLES FOR THEMES */
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a2e;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e0e0;
+            --primary: #00d9ff;
+            --secondary: #ff00ff;
+            --accent: #ffd700;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f0f4f8;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a5568;
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --accent: #059669;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="colorful"] {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #f0f0f0;
+            --primary: #00d9ff;
+            --secondary: #ff00ff;
+            --accent: #ffd700;
+            --card-bg: rgba(255, 255, 255, 0.15);
+            --border-color: rgba(255, 255, 255, 0.3);
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* PRELOADER */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 5px solid var(--border-color);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .loader-percentage {
+            margin-top: 10px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 3D BACKGROUND CANVAS */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* NAVIGATION */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 5%;
+            background: rgba(var(--bg-primary), 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .theme-btn {
+            padding: 8px 15px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .theme-btn:hover, .theme-btn.active {
+            background: var(--primary);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 217, 255, 0.4);
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 5% 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 60px;
+            max-width: 1400px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .profile-container {
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .profile-image {
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--primary);
+            box-shadow: 0 0 50px rgba(0, 217, 255, 0.5);
+            animation: float 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .profile-image:hover {
+            transform: rotateY(360deg) scale(1.05);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text .title {
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .typing-text {
+            font-size: 1.3rem;
+            color: var(--accent);
+            margin-bottom: 30px;
+            min-height: 40px;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.6);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .social-links a {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.3rem;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            color: var(--bg-primary);
+            transform: translateY(-5px) rotate(360deg);
+        }
+
+        /* SECTION STYLES */
+        section {
+            padding: 100px 5%;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        /* ABOUT SECTION */
+        .about {
+            background: var(--bg-secondary);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            transform-style: preserve-3d;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .about-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .about-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-card p, .about-card li {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .about-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .about-card li::before {
+            content: '▸';
+            color: var(--accent);
+            margin-right: 10px;
+        }
+
+        /* SKILLS SECTION */
+        .skills-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .skills-filter {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 25px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: var(--bg-primary);
+            transform: scale(1.05);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .skill-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            transform-style: preserve-3d;
+            transition: all 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: translateZ(20px);
+            box-shadow: 0 15px 35px var(--shadow);
+        }
+
+        .skill-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .skill-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            animation: rotate3d 10s linear infinite;
+        }
+
+        @keyframes rotate3d {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        .skill-info h3 {
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .skill-info span {
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .skill-bar {
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            width: 0;
+            transition: width 1.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* WORK EXPERIENCE SECTION */
+        .experience {
+            background: var(--bg-secondary);
+        }
+
+        .timeline {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .timeline-item {
+            margin-bottom: 50px;
+            position: relative;
+            width: 50%;
+            padding: 0 40px;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            top: 0;
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -10px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -10px;
+        }
+
+        .timeline-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            transform-style: preserve-3d;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .timeline-card:hover {
+            transform: translateZ(30px) scale(1.02);
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .timeline-date {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .timeline-title {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .timeline-company {
+            color: var(--secondary);
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .timeline-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .timeline-content ul {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .timeline-content li::before {
+            content: '✓';
+            color: var(--accent);
+            margin-right: 10px;
+        }
+
+        /* PROJECTS SECTION */
+        .projects-filter {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: all 0.5s;
+            position: relative;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) rotateY(5deg);
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+        }
+
+        .project-info {
+            padding: 25px;
+        }
+
+        .project-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .project-tech {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .tech-tag {
+            padding: 5px 12px;
+            background: var(--primary);
+            color: var(--bg-primary);
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .project-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .project-btn.primary {
+            background: var(--primary);
+            color: var(--bg-primary);
+        }
+
+        .project-btn.secondary {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .project-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 217, 255, 0.4);
+        }
+
+        /* Projects Table */
+        .projects-table-container {
+            max-width: 1200px;
+            margin: 60px auto 0;
+            overflow-x: auto;
+        }
+
+        .projects-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .projects-table th,
+        .projects-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .projects-table th {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .projects-table tr:hover {
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .projects-table a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .projects-table a:hover {
+            text-decoration: underline;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-completed {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* ACHIEVEMENTS SECTION */
+        .achievements {
+            background: var(--bg-secondary);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .achievement-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transform-style: preserve-3d;
+            transition: all 0.3s;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-10px) translateZ(20px);
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .achievement-icon {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .achievement-number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .achievement-text {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* CONTACT SECTION */
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .contact-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transform-style: preserve-3d;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .contact-card:hover {
+            transform: translateX(10px) translateZ(20px);
+            box-shadow: 0 10px 30px var(--shadow);
+        }
+
+        .contact-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .contact-icon.whatsapp {
+            background: #25d366;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(37, 211, 102, 0); }
+        }
+
+        .contact-details h3 {
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .contact-details p {
+            color: var(--text-secondary);
+        }
+
+        .contact-form {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .submit-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.4);
+        }
+
+        /* RESUME SECTION */
+        .resume-section {
+            background: var(--bg-secondary);
+            text-align: center;
+        }
+
+        .resume-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .resume-btn {
+            flex: 1;
+            min-width: 280px;
+            padding: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+            transform-style: preserve-3d;
+        }
+
+        .resume-btn:hover {
+            transform: translateY(-10px) translateZ(30px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .resume-icon {
+            font-size: 4rem;
+            color: var(--primary);
+        }
+
+        .resume-btn h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .resume-btn p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .file-size {
+            padding: 5px 15px;
+            background: var(--primary);
+            color: var(--bg-primary);
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* GITHUB SECTION */
+        .github-search {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .github-search input {
+            width: 100%;
+            padding: 18px 50px 18px 25px;
+            border: 2px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-radius: 50px;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .github-search i {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* BACK TO TOP BUTTON */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+            box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.6);
+        }
+
+        /* CURSOR FOLLOWER */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: all 0.3s;
+            transform: translate(-50%, -50%);
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .profile-image {
+                width: 250px;
+                height: 250px;
+                margin: 0 auto;
+                display: block;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 30px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                padding-left: 80px;
+                text-align: left !important;
+            }
+
+            .timeline-dot {
+                left: 20px !important;
+                right: auto !important;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .skills-grid,
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                justify-content: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+        }
+
+        /* ANIMATION CLASSES */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlide 0.3s;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        .modal h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader"></div>
+        <div class="loader-text">Loading Portfolio...</div>
+        <div class="loader-percentage" id="loader-percentage">0%</div>
+    </div>
+
+    <!-- Cursor Follower -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- 3D Background Canvas -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">AKM</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li>
+                <div class="theme-toggle">
+                    <button class="theme-btn active" data-theme="dark">Dark</button>
+                    <button class="theme-btn" data-theme="light">Light</button>
+                    <button class="theme-btn" data-theme="colorful">Color</button>
+                </div>
+            </li>
+        </ul>
+        <div class="mobile-menu">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="profile-container">
+                <img src="c:\Users\Anil Mandal\Desktop\JOB\photo for web.png" alt="Anil Kumar Mandal" class="profile-image">
+            </div>
+            <div class="hero-text">
+                <h1>Anil Kumar Mandal</h1>
+                <div class="title">Data Analyst & IT Operations Management</div>
+                <div class="typing-text" id="typing-text"></div>
+                <p class="hero-description">
+                    Oriented MIS Manager & Data Analyst with 15+ years of experience in analyzing large data sets, 
+                    Preparing sales forecasts, Creating dashboards, and generating meaningful insights for strategic 
+                    decision-making.
+                </p>
+                <div class="cta-buttons">
+                    <a href="#projects" class="btn btn-primary">
+                        <i class="fas fa-eye"></i> View Projects
+                    </a>
+                    <a href="c:\Users\Anil Mandal\Desktop\JOB\Resume Data Analyst.pdf" class="btn btn-secondary">
+                        <i class="fas fa-download"></i> Download Resume
+                    </a>
+                    <a href="#contact" class="btn btn-primary">
+                        <i class="fas fa-envelope"></i> Contact Me
+                    </a>
+                </div>
+                <div class="social-links">
+                    <a href="https://linkedin.com/in/anil-mandal-16997386" target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://github.com/anilmandal" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://wa.me/917503699636" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="mailto:mandal.anil23@gmail.com">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-grid">
+            <div class="about-card fade-in">
+                <h3><i class="fas fa-user"></i> Professional Summary</h3>
+                <p>
+                    Oriented MIS Manager & Data Analyst with 15+ years of experience in analyzing large data sets, 
+                    Preparing sales forecasts, Creating dashboards, and generating meaningful insights for strategic 
+                    decision-making. Skilled in Power BI, Advanced Excel, SQL and Data Visualization.
+                </p>
+            </div>
+            <div class="about-card fade-in">
+                <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                <ul>
+                    <li><strong>MBA</strong> from SMU, 2018</li>
+                    <li>Specialized in Data Analytics & Business Intelligence</li>
+                    <li>Continuous learner in emerging technologies</li>
+                </ul>
+            </div>
+            <div class="about-card fade-in">
+                <h3><i class="fas fa-map-marker-alt"></i> Contact Info</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> +91-7503699636</li>
+                    <li><i class="fas fa-envelope"></i> mandal.anil23@gmail.com</li>
+                    <li><i class="fas fa-map-marked"></i> Jahangirpuri, New Delhi - 110033</li>
+                    <li><i class="fab fa-linkedin"></i> linkedin.com/in/anil-mandal-16997386</li>
+                </ul>
+            </div>
+            <div class="about-card fade-in" onclick="togglePersonalDetails()">
+                <h3><i class="fas fa-id-card"></i> Personal Details <i class="fas fa-chevron-down" style="margin-left: auto;"></i></h3>
+                <div id="personal-details" style="display: none; margin-top: 15px;">
+                    <ul>
+                        <li><strong>Father's Name:</strong> Sri Achhey Lal Mandal</li>
+                        <li><strong>Date of Birth:</strong> 13th October 1983</li>
+                        <li><strong>Languages:</strong> Hindi, English & Bhojpuri</li>
+                        <li><strong>Marital Status:</strong> Married</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills" id="skills">
+        <h2 class="section-title">Technical Skills</h2>
+        <div class="skills-container">
+            <div class="skills-filter">
+                <button class="filter-btn active" data-filter="all">All Skills</button>
+                <button class="filter-btn" data-filter="analytics">Analytics</button>
+                <button class="filter-btn" data-filter="automation">Automation</button>
+                <button class="filter-btn" data-filter="visualization">Visualization</button>
+            </div>
+            <div class="skills-grid" id="skills-grid">
+                <!-- Skills will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Work Experience Section -->
+    <section class="experience" id="experience">
+        <h2 class="section-title">Work Experience</h2>
+        <div class="timeline">
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <span class="timeline-date">Present</span>
+                    <h3 class="timeline-title">Freelance Data Analyst & Business Automation Specialist</h3>
+                    <div class="timeline-company">Self-Employed</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Built automated sales and MIS dashboards in Excel/Power BI</li>
+                            <li>Reduced manual reporting time by 60%</li>
+                            <li>Created CRM software & Web Applications</li>
+                            <li>Implemented workflow automations using n8n/Make</li>
+                            <li>AI Agent Developer for business process automation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <span class="timeline-date">July 2025 - Aug 2025</span>
+                    <h3 class="timeline-title">Assistant Manager CRM</h3>
+                    <div class="timeline-company">ATS HomeKraft</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Data management and dashboard preparation</li>
+                            <li>Improved reporting accuracy by 40%</li>
+                            <li>Analysis of trends, growth, profit & loss</li>
+                            <li>YoY, MoM, WoW, DoD calculations</li>
+                            <li>Updated data in Farvision ERP software</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <span class="timeline-date">July 2023 - May 2025</span>
+                    <h3 class="timeline-title">Assistant Manager</h3>
+                    <div class="timeline-company">FIITJEE Limited</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Data management and reporting</li>
+                            <li>Prepared dashboards and data analysis</li>
+                            <li>Coordinated with departments and centers</li>
+                            <li>Managed course fees and web portal updates</li>
+                            <li>Student registration and exam scheduling</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <span class="timeline-date">Feb 2021 - July 2023</span>
+                    <h3 class="timeline-title">Data Analyst & IT Operations Management</h3>
+                    <div class="timeline-company">S.D. Logistics Pvt Ltd</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Data management across PAN India warehouses</li>
+                            <li>Prepared customer and vendor bills</li>
+                            <li>Coordinated with billing team</li>
+                            <li>Managed expenses, salary, transportation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <span class="timeline-date">June 2018 - June 2020</span>
+                    <h3 class="timeline-title">Senior Management Associate (Consultant)</h3>
+                    <div class="timeline-company">Ministry of Home Affairs (UT Division)</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Worked with 18 Government Projects</li>
+                            <li>Managed Jandhan Yojna, Aadhar, Ujwala etc.</li>
+                            <li>Prepared reports, PPT, agenda, minutes</li>
+                            <li>Worked with deputy commandant as PA</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <span class="timeline-date">Feb 2016 - Apr 2018</span>
+                    <h3 class="timeline-title">Senior MIS Executive & Business Development</h3>
+                    <div class="timeline-company">IACM Smartlearn Ltd</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Managed ASDP/PMKVY projects</li>
+                            <li>Managed Aajeevika Skill Development Programme</li>
+                            <li>Center management and team handling</li>
+                            <li>Mobilization, counseling, enrollment</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item fade-in">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <span class="timeline-date">July 2012 - Jan 2016</span>
+                    <h3 class="timeline-title">MIS Executive</h3>
+                    <div class="timeline-company">IL&FS Education & Technology Services</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Deputed for DDU-GKY Division</li>
+                            <li>Ministry of Rural Development support</li>
+                            <li>Managed ASDMS and new proposals</li>
+                            <li>Uploaded/downloaded data on portals</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects" id="projects">
+        <h2 class="section-title">Projects</h2>
+        <div class="projects-filter">
+            <button class="filter-btn active" data-project-filter="all">All Projects</button>
+            <button class="filter-btn" data-project-filter="powerbi">Power BI</button>
+            <button class="filter-btn" data-project-filter="excel">Excel</button>
+            <button class="filter-btn" data-project-filter="webapp">Web Apps</button>
+            <button class="filter-btn" data-project-filter="automation">Automation</button>
+        </div>
+        
+        <div class="projects-grid" id="projects-grid">
+            <!-- Projects will be dynamically inserted -->
+        </div>
+
+        <div class="projects-table-container">
+            <table class="projects-table">
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Technology</th>
+                        <th>Status</th>
+                        <th>View</th>
+                        <th>GitHub</th>
+                    </tr>
+                </thead>
+                <tbody id="projects-table-body">
+                    <!-- Table rows will be dynamically inserted -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Achievements Section -->
+    <section class="achievements">
+        <h2 class="section-title">Key Achievements</h2>
+        <div class="achievements-grid">
+            <div class="achievement-card fade-in">
+                <i class="fas fa-chart-line achievement-icon"></i>
+                <div class="achievement-number" data-target="40">0</div>
+                <div class="achievement-text">% Improvement in Reporting Accuracy</div>
+            </div>
+            <div class="achievement-card fade-in">
+                <i class="fas fa-clock achievement-icon"></i>
+                <div class="achievement-number" data-target="60">0</div>
+                <div class="achievement-text">% Reduction in Manual Reporting Time</div>
+            </div>
+            <div class="achievement-card fade-in">
+                <i class="fas fa-briefcase achievement-icon"></i>
+                <div class="achievement-number" data-target="15">0</div>
+                <div class="achievement-text">+ Years Experience</div>
+            </div>
+            <div class="achievement-card fade-in">
+                <i class="fas fa-project-diagram achievement-icon"></i>
+                <div class="achievement-number" data-target="50">0</div>
+                <div class="achievement-text">+ Projects Completed</div>
+            </div>
+            <div class="achievement-card fade-in">
+                <i class="fas fa-landmark achievement-icon"></i>
+                <div class="achievement-number" data-target="18">0</div>
+                <div class="achievement-text">Government Projects Handled</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume Download Section -->
+    <section class="resume-section" id="resume">
+        <h2 class="section-title">Download Resume</h2>
+        <div class="resume-buttons">
+            <a href="c:\Users\Anil Mandal\Desktop\JOB\Resume Data Analyst.pdf" class="resume-btn" onclick="downloadResume()">
+                <i class="fas fa-file-pdf resume-icon"></i>
+                <h3>Download Resume</h3>
+                <p>Professional CV with detailed experience</p>
+                <span class="file-size">PDF - 2.5 MB</span>
+            </a>
+            <a href="c:\Users\Anil Mandal\Desktop\JOB\Resume Data Analyst.pdf" class="resume-btn" onclick="downloadCoverLetter()">
+                <i class="fas fa-file-alt resume-icon"></i>
+                <h3>Download Cover Letter</h3>
+                <p>Detailed cover letter for job applications</p>
+                <span class="file-size">PDF - 1.2 MB</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <a href="https://wa.me/917503699636" target="_blank" class="contact-card">
+                    <div class="contact-icon whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>WhatsApp</h3>
+                        <p>+91-7503699636</p>
+                        <small>Click to chat directly</small>
+                    </div>
+                </a>
+
+                <a href="mailto:mandal.anil23@gmail.com" class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Email</h3>
+                        <p>mandal.anil23@gmail.com</p>
+                        <small>Send me an email anytime</small>
+                    </div>
+                </a>
+
+                <a href="tel:+917503699636" class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Phone</h3>
+                        <p>+91-7503699636</p>
+                        <small>Call me during business hours</small>
+                    </div>
+                </a>
+
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>Location</h3>
+                        <p>Jahangirpuri, New Delhi - 110033</p>
+                        <small>India</small>
+                    </div>
+                </div>
+
+                <a href="https://linkedin.com/in/anil-mandal-16997386" target="_blank" class="contact-card">
+                    <div class="contact-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </div>
+                    <div class="contact-details">
+                        <h3>LinkedIn</h3>
+                        <p>linkedin.com/in/anil-mandal-16997386</p>
+                        <small>Connect with me professionally</small>
+                    </div>
+                </a>
+            </div>
+
+            <div class="contact-form">
+                <form id="contactForm" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Your Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- GitHub Integration Section -->
+    <section class="github-section" id="github">
+        <h2 class="section-title">GitHub Repositories</h2>
+        <div class="github-search">
+            <input type="text" id="github-search" placeholder="Search repositories..." onkeyup="searchGitHub()">
+            <i class="fas fa-search"></i>
+        </div>
+        <div class="projects-table-container">
+            <table class="projects-table">
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Description</th>
+                        <th>Technology</th>
+                        <th>GitHub Link</th>
+                        <th>Live Demo</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="github-table-body">
+                    <!-- GitHub projects will be dynamically inserted -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Project Details</h2>
+            <div class="modal-body" id="modal-body">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== PRELOADER ====================
+        window.addEventListener('load', () => {
+            let percentage = 0;
+            const interval = setInterval(() => {
+                percentage += 5;
+                document.getElementById('loader-percentage').textContent = percentage + '%';
+                if (percentage >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        gsap.to('#preloader', {
+                            opacity: 0,
+                            duration: 0.5,
+                            onComplete: () => {
+                                document.getElementById('preloader').style.display = 'none';
+                            }
+                        });
+                    }, 500);
+                }
+            }, 50);
+        });
+
+        // ==================== THEME TOGGLE ====================
+        const themeBtns = document.querySelectorAll('.theme-btn');
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateActiveTheme(currentTheme);
+
+        themeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.getAttribute('data-theme');
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                updateActiveTheme(theme);
+            });
+        });
+
+        function updateActiveTheme(activeTheme) {
+            themeBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-theme') === activeTheme) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // ==================== THREE.JS 3D BACKGROUND ====================
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Create floating geometric shapes
+        const geometries = [];
+        const materials = [];
+        const meshes = [];
+
+        // Create different geometric shapes
+        const geometryTypes = [
+            new THREE.IcosahedronGeometry(1, 0),
+            new THREE.OctahedronGeometry(1, 0),
+            new THREE.TetrahedronGeometry(1, 0),
+            new THREE.BoxGeometry(1, 1, 1)
+        ];
+
+        for (let i = 0; i < 15; i++) {
+            const geometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
+            const material = new THREE.MeshBasicMaterial({
+                color: i % 2 === 0 ? 0x00d9ff : 0xff00ff,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            
+            mesh.position.x = (Math.random() - 0.5) * 20;
+            mesh.position.y = (Math.random() - 0.5) * 20;
+            mesh.position.z = (Math.random() - 0.5) * 10 - 5;
+            
+            mesh.rotation.x = Math.random() * Math.PI;
+            mesh.rotation.y = Math.random() * Math.PI;
+            
+            mesh.userData = {
+                rotationSpeed: {
+                    x: (Math.random() - 0.5) * 0.01,
+                    y: (Math.random() - 0.5) * 0.01
+                },
+                floatSpeed: Math.random() * 0.002 + 0.001,
+                floatOffset: Math.random() * Math.PI * 2
+            };
+            
+            scene.add(mesh);
+            meshes.push(mesh);
+        }
+
+        camera.position.z = 5;
+
+        // Mouse interaction
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            
+            const time = Date.now() * 0.001;
+            
+            meshes.forEach((mesh, index) => {
+                mesh.rotation.x += mesh.userData.rotationSpeed.x;
+                mesh.rotation.y += mesh.userData.rotationSpeed.y;
+                
+                mesh.position.y += Math.sin(time + mesh.userData.floatOffset) * 0.002;
+            });
+            
+            camera.position.x += (mouseX * 2 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 2 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            
+            renderer.render(scene, camera);
+        }
+
+        animate3D();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ==================== TYPING EFFECT ====================
+        const typingTexts = [
+            "Power BI Expert",
+            "Advanced Excel Specialist",
+            "Data Visualization Expert",
+            "Business Automation Specialist",
+            "AI Agent Developer",
+            "SQL & Database Expert"
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingElement = document.getElementById('typing-text');
+
+        function type() {
+            const currentText = typingTexts[textIndex];
+            
+            if (isDeleting) {
+                typingElement.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            let typeSpeed = isDeleting ? 50 : 100;
+            
+            if (!isDeleting && charIndex === currentText.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                textIndex = (textIndex + 1) % typingTexts.length;
+                typeSpeed = 500;
+            }
+            
+            setTimeout(type, typeSpeed);
+        }
+
+        type();
+
+        // ==================== SKILLS DATA ====================
+        const skillsData = [
+            { name: "Power BI", level: 95, category: "visualization", icon: "fa-chart-bar", desc: "Data Visualization, DAX, Power Query, Dashboard" },
+            { name: "Advanced Excel", level: 98, category: "analytics", icon: "fa-file-excel", desc: "VBA, Macro, Power Pivot, Automation" },
+            { name: "SQL & MS SQL", level: 85, category: "analytics", icon: "fa-database", desc: "Query Writing, Database Management" },
+            { name: "Google Script", level: 90, category: "automation", icon: "fa-code", desc: "Automation, Web Application Development" },
+            { name: "AI Agent Builder", level: 88, category: "automation", icon: "fa-robot", desc: "Business Process Automation" },
+            { name: "Looker Studio", level: 85, category: "visualization", icon: "fa-chart-line", desc: "Dashboard Creation, Data Visualization" },
+            { name: "Web Development", level: 82, category: "automation", icon: "fa-laptop-code", desc: "HTML, CSS, JavaScript, Web Apps" },
+            { name: "ERP/CRM Software", level: 87, category: "analytics", icon: "fa-cogs", desc: "Implementation & Management" },
+            { name: "Data Analysis", level: 93, category: "analytics", icon: "fa-analytics", desc: "Statistical Modeling, Forecasting" },
+            { name: "Business Intelligence", level: 91, category: "visualization", icon: "fa-lightbulb", desc: "Strategic Insights, KPI Tracking" }
+        ];
+
+        function renderSkills(filter = 'all') {
+            const skillsGrid = document.getElementById('skills-grid');
+            skillsGrid.innerHTML = '';
+            
+            const filteredSkills = filter === 'all' 
+                ? skillsData 
+                : skillsData.filter(skill => skill.category === filter);
+            
+            filteredSkills.forEach((skill, index) => {
+                const skillCard = document.createElement('div');
+                skillCard.className = 'skill-card fade-in';
+                skillCard.style.animationDelay = `${index * 0.1}s`;
+                skillCard.innerHTML = `
+                    <div class="skill-header">
+                        <div class="skill-icon">
+                            <i class="fas ${skill.icon}"></i>
+                        </div>
+                        <div class="skill-info">
+                            <h3>${skill.name}</h3>
+                            <span>${skill.desc}</span>
+                        </div>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="${skill.level}"></div>
+                    </div>
+                `;
+                skillsGrid.appendChild(skillCard);
+            });
+            
+            // Animate skill bars
+            setTimeout(() => {
+                document.querySelectorAll('.skill-progress').forEach(bar => {
+                    const progress = bar.getAttribute('data-progress');
+                    bar.style.width = progress + '%';
+                });
+            }, 100);
+        }
+
+        renderSkills();
+
+        // Skills filter
+        document.querySelectorAll('.skills-filter .filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.skills-filter .filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderSkills(this.getAttribute('data-filter'));
+            });
+        });
+
+        // ==================== PROJECTS DATA ====================
+        const projectsData = [
+            {
+                name: "Automated Sales Dashboard",
+                category: "powerbi",
+                technology: ["Power BI", "DAX", "SQL"],
+                icon: "fa-chart-pie",
+                description: "Interactive sales dashboard with real-time data visualization, KPI tracking, and automated reporting.",
+                github: "#",
+                live: "#",
+                status: "active"
+            },
+            {
+                name: "MIS Reporting Automation",
+                category: "excel",
+                technology: ["Excel VBA", "Macro", "Power Query"],
+                icon: "fa-file-excel",
+                description: "Automated MIS reporting system reducing manual effort by 60% with VBA macros and Power Query.",
+                github: "#",
+                live: "#",
+                status: "completed"
+            },
+            {
+                name: "CRM Web Application",
+                category: "webapp",
+                technology: ["HTML", "CSS", "JavaScript", "Google Script"],
+                icon: "fa-users",
+                description: "Custom CRM solution for managing customer relationships and sales pipeline.",
+                github: "#",
+                live: "#",
+                status: "active"
+            },
+            {
+                name: "AI Agent for Business Process",
+                category: "automation",
+                technology: ["AI Agent", "n8n", "Make"],
+                icon: "fa-robot",
+                description: "Intelligent automation agent for streamlining business processes and reducing admin tasks.",
+                github: "#",
+                live: "#",
+                status: "active"
+            },
+            {
+                name: "Google Script Automation Tools",
+                category: "automation",
+                technology: ["Google Script", "Apps Script", "Web App"],
+                icon: "fa-tools",
+                description: "Collection of automation tools built with Google Script for various business processes.",
+                github: "#",
+                live: "#",
+                status: "completed"
+            },
+            {
+                name: "Financial Analytics Dashboard",
+                category: "powerbi",
+                technology: ["Power BI", "Power Query", "DAX"],
+                icon: "fa-coins",
+                description: "Comprehensive financial dashboard with P&L analysis, budget tracking, and forecasting.",
+                github: "#",
+                live: "#",
+                status: "active"
+            }
+        ];
+
+        function renderProjects(filter = 'all') {
+            const projectsGrid = document.getElementById('projects-grid');
+            const tableBody = document.getElementById('projects-table-body');
+            projectsGrid.innerHTML = '';
+            tableBody.innerHTML = '';
+            
+            const filteredProjects = filter === 'all' 
+                ? projectsData 
+                : projectsData.filter(project => project.category === filter);
+            
+            filteredProjects.forEach((project, index) => {
+                // Grid Card
+                const projectCard = document.createElement('div');
+                projectCard.className = 'project-card fade-in';
+                projectCard.style.animationDelay = `${index * 0.1}s`;
+                projectCard.innerHTML = `
+                    <div class="project-image">
+                        <i class="fas ${project.icon}"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3 class="project-title">${project.name}</h3>
+                        <div class="project-tech">
+                            ${project.technology.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+                        </div>
+                        <p style="color: var(--text-secondary); margin-bottom: 15px; line-height: 1.6;">
+                            ${project.description}
+                        </p>
+                        <div class="project-links">
+                            <a href="${project.live}" class="project-btn primary" onclick="showProjectDetails(${index})">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                            <a href="${project.github}" class="project-btn secondary" target="_blank">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        </div>
+                    </div>
+                `;
+                projectsGrid.appendChild(projectCard);
+                
+                // Table Row
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${project.name}</strong></td>
+                    <td>${project.technology.join(', ')}</td>
+                    <td><span class="status-badge status-${project.status}">${project.status}</span></td>
+                    <td><a href="#" onclick="showProjectDetails(${index}); return false;"><i class="fas fa-eye"></i> View</a></td>
+                    <td><a href="${project.github}" target="_blank"><i class="fab fa-github"></i> Link</a></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        renderProjects();
+
+        // Projects filter
+        document.querySelectorAll('.projects-filter .filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.projects-filter .filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderProjects(this.getAttribute('data-project-filter'));
+            });
+        });
+
+        function showProjectDetails(index) {
+            const project = projectsData[index];
+            document.getElementById('modal-title').textContent = project.name;
+            document.getElementById('modal-body').innerHTML = `
+                <p><strong>Technologies:</strong> ${project.technology.join(', ')}</p>
+                <p style="margin-top: 15px;"><strong>Description:</strong></p>
+                <p>${project.description}</p>
+                <p style="margin-top: 15px;"><strong>Key Features:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>Automated data processing and reporting</li>
+                    <li>Real-time data visualization</li>
+                    <li>Interactive dashboards</li>
+                    <li>Reduced manual effort by 60%</li>
+                </ul>
+            `;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // ==================== ACHIEVEMENTS COUNTER ANIMATION ====================
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.getAttribute('data-target'));
+                    animateCounter(entry.target, target);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.achievement-number').forEach(num => {
+            observer.observe(num);
+        });
+
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + (target === 15 || target === 18 ? '+' : '%');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 30);
+        }
+
+        // ==================== SCROLL ANIMATIONS ====================
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Fade in animations
+        const fadeElements = document.querySelectorAll('.fade-in');
+        fadeElements.forEach(element => {
+            gsap.fromTo(element, 
+                { opacity: 0, y: 50 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: element,
+                        start: 'top 85%',
+                        toggleActions: 'play none none reverse'
+                    }
+                }
+            );
+        });
+
+        // ==================== BACK TO TOP BUTTON ====================
+        window.addEventListener('scroll', () => {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==================== CONTACT FORM ====================
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
+            
+            // Show success message
+            alert('Thank you for your message! I will get back to you soon.');
+            document.getElementById('contactForm').reset();
+            
+            // In production, you would send this data to a server
+            console.log('Form submitted:', formData);
+        }
+
+        // ==================== RESUME DOWNLOAD ====================
+        function downloadResume() {
+            // Create a sample resume download
+            const resumeContent = `
+                ANIL KUMAR MANDAL
+                Data Analyst & IT Operations Management
+                
+                Contact: +91-7503699636 | mandal.anil23@gmail.com
+                Location: Jahangirpuri, New Delhi - 110033
+                LinkedIn: linkedin.com/in/anil-mandal-16997386
+                
+                PROFESSIONAL SUMMARY
+                Oriented MIS Manager & Data Analyst with 15+ years of experience in analyzing large data sets, 
+                Preparing sales forecasts, Creating dashboards, and generating meaningful insights for strategic 
+                decision-making.
+                
+                SKILLS
+                - Power BI, Advanced Excel, SQL, Data Visualization
+                - Business Automation, AI Agent Development
+                - Web Application Development
+                - Stakeholder Management, Team Leadership
+                
+                EXPERIENCE
+                [Detailed work experience from resume]
+            `;
+            
+            const blob = new Blob([resumeContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Anil_Kumar_Mandal_Resume.txt';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function downloadCoverLetter() {
+            const coverLetter = `
+                Dear Hiring Manager,
+                
+                I am writing to express my interest in the Data Analyst position. With 15+ years of experience 
+                in data analytics, business intelligence, and IT operations management, I bring a unique blend 
+                of technical expertise and business acumen.
+                
+                My key achievements include:
+                - 40% improvement in reporting accuracy
+                - 60% reduction in manual reporting time
+                - Successfully handled 18 government projects
+                - Expert in Power BI, Advanced Excel, SQL, and automation tools
+                
+                I am excited about the opportunity to contribute to your organization.
+                
+                Sincerely,
+                Anil Kumar Mandal
+            `;
+            
+            const blob = new Blob([coverLetter], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Anil_Kumar_Mandal_Cover_Letter.txt';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // ==================== GITHUB INTEGRATION ====================
+        const githubProjects = [
+            {
+                name: "Power BI Dashboard Templates",
+                description: "Collection of reusable Power BI dashboard templates for various business scenarios",
+                technology: "Power BI, DAX, Power Query",
+                github: "https://github.com/anilmandal/powerbi-templates",
+                live: "#",
+                status: "active"
+            },
+            {
+                name: "Excel Automation Scripts",
+                description: "VBA macros and automation scripts for common Excel tasks",
+                technology: "Excel VBA, Macro",
+                github: "https://github.com/anilmandal/excel-automation",
+                live: "#",
+                status: "active"
+            },
+            {
+                name: "Google Script Utilities",
+                description: "Useful Google Apps Script functions for automation",
+                technology: "Google Script, Apps Script",
+                github: "https://github.com/anilmandal/google-script-utils",
+                live: "#",
+                status: "completed"
+            }
+        ];
+
+        function renderGitHubProjects(projects) {
+            const tbody = document.getElementById('github-table-body');
+            tbody.innerHTML = '';
+            
+            projects.forEach(project => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${project.name}</strong></td>
+                    <td>${project.description}</td>
+                    <td>${project.technology}</td>
+                    <td><a href="${project.github}" target="_blank"><i class="fab fa-github"></i> Repository</a></td>
+                    <td><a href="${project.live}" target="_blank"><i class="fas fa-external-link-alt"></i> Demo</a></td>
+                    <td><span class="status-badge status-${project.status}">${project.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        renderGitHubProjects(githubProjects);
+
+        function searchGitHub() {
+            const searchTerm = document.getElementById('github-search').value.toLowerCase();
+            const filtered = githubProjects.filter(project => 
+                project.name.toLowerCase().includes(searchTerm) || 
+                project.description.toLowerCase().includes(searchTerm) ||
+                project.technology.toLowerCase().includes(searchTerm)
+            );
+            renderGitHubProjects(filtered);
+        }
+
+        // ==================== CURSOR FOLLOWER ====================
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                cursorFollower.style.left = e.clientX + 'px';
+                cursorFollower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+
+        // Add hover effect to interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, .project-card, .timeline-card');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cursorFollower.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+        });
+
+        // ==================== PERSONAL DETAILS TOGGLE ====================
+        function togglePersonalDetails() {
+            const details = document.getElementById('personal-details');
+            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // ==================== SMOOTH SCROLL FOR NAVIGATION ====================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // ==================== ACTIVE NAVIGATION HIGHLIGHTING ====================
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-links a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.color = '';
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.style.color = 'var(--primary)';
+                }
+            });
+        });
+
+        console.log('Portfolio website loaded successfully!');
+    </script>
+</body>
+</html>
